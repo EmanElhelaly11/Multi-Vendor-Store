@@ -2,9 +2,12 @@
 
 @section ('title','Starter Page')
 
+@section('breadcrumb')
+   @parent
+   <li class="breadcrumb-item active">Starter Page</li>
+@endsection
+
 @section('content')
-  <!-- Content Wrapper. Contains page content -->
-  
         <div class="row">
           <div class="col-lg-6">
             <div class="card">
@@ -62,5 +65,4 @@
           </div>
           <!-- /.col-md-6 -->
         </div>
-        <!-- /.row -->
 @endsection
