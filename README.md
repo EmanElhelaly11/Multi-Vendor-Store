@@ -2,4 +2,5 @@
 
 
 ## Multi-Vendor Store
-
+YouTube Course Playlist: [Link](https://youtube.com/playlist?list=PL13Ag2mfco64zMLcFjPb5GVWCu-OAjTrx&si=1uxvp_eW83hBmIU6)  
+My Notes: [Link](https://eman-elhelaly.notion.site/Laravel-9-Course-780ddcecda554906b7255e36fc46c5fa?pvs=4)
