@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 
 class CategoriesController extends Controller
 {
@@ -26,7 +27,7 @@ class CategoriesController extends Controller
     {
         $parents = Category::all();
         $category = new Category();
-        return view('dashboard.categories.create', compact('category','parents'));
+        return view('dashboard.categories.create', compact('category', 'parents'));
     }
 
     /**
@@ -39,8 +40,11 @@ class CategoriesController extends Controller
             'slug' => Str::slug($request->post('name'))
         ]);
 
+        $data = $request->except('image');
+        $data['image'] = $this->uploadImage($request);
+
         // Mass Assignement
-        $category = Category::create($request->all());
+        $category = Category::create($data);
 
         // PRG
         return Redirect::route('dashboard.categories.index')
@@ -77,7 +81,17 @@ class CategoriesController extends Controller
     public function update(Request $request, string $id)
     {
         $category = Category::findOrFail($id);
-        $category->update($request->all());
+
+        $old_image = $category->image;
+
+        $data = $request->except('image');
+        $data['image'] = $this->uploadImage($request);
+
+        $category->update($data);
+
+        if ($old_image && $data['image']) {
+            Storage::disk('public')->delete($old_image);
+        }
 
         return Redirect::route('dashboard.categories.index')
             ->with('success', 'Category updated!');
@@ -88,9 +102,29 @@ class CategoriesController extends Controller
      */
     public function destroy(string $id)
     {
-        Category::destroy($id);
+        //Category::destroy($id);
+
+        $category = Category::findOrFail($id);
+        $category->delete();
+
+        if ($category->image) {
+            Storage::disk('public')->delete($category->image);
+        }
 
         return Redirect::route('dashboard.categories.index')
             ->with('success', 'Category deleted!');
+    }
+
+
+    protected function uploadImage(Request $request)
+    {
+        if (!$request->hasFile('image')) {
+            return;
+        }
+        $file = $request->file('image');
+        $path = $file->store('uploads', [
+            'disk' => 'public'
+        ]);
+        return $path;
     }
 }
